@@ -1,1 +1,1 @@
-# akross-bot-admin-panel
+# Aksross bot's admin panel
