@@ -4,8 +4,8 @@ from django.db import models
 class TelegramUser(models.Model):
     LANGUAGE_CODE_CHOICES = (
         ('uz', 'uz'),
-        ('uz', 'ru'),
-        ('uz', 'en'),
+        ('ru', 'ru'),
+        ('en', 'en'),
     )
 
     STATUS_CHOICES = (
