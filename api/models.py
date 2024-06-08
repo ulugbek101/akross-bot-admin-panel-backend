@@ -16,11 +16,11 @@ class TelegramUser(models.Model):
     )
 
     fullname = models.CharField(max_length=200)
-    phone_number = models.CharField(max_length=13)
+    phone_number = models.CharField(max_length=13, blank=True, null=True)
     telegram_id = models.CharField(max_length=200, unique=True)
     username = models.CharField(max_length=200, blank=True, null=True)
-    language_code = models.CharField(max_length=2, choices=LANGUAGE_CODE_CHOICES, default='uz')
-    status = models.CharField(max_length=200, choices=STATUS_CHOICES, default='bronze')
+    language_code = models.CharField(max_length=2, choices=LANGUAGE_CODE_CHOICES, default='uz', db_default='uz')
+    status = models.CharField(max_length=200, choices=STATUS_CHOICES, default='bronze', db_default='bronze')
     order_count = models.IntegerField(default=0)
     last_visited_place = models.CharField(max_length=20, blank=True, null=True)
 
@@ -32,13 +32,19 @@ class TelegramUser(models.Model):
 
 
 class Category(models.Model):
+    BELONGS_TO_CHOICES = (
+        ('foods', 'Foods'),
+        ('others', 'Others'),
+    )
+
     name_uz = models.CharField(max_length=200, unique=True)
     name_ru = models.CharField(max_length=200, unique=True)
     name_en = models.CharField(max_length=200, unique=True)
     photo = models.CharField(max_length=200)
     has_subcategory = models.BooleanField(default=False)
-    category = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='subcategories')
-    belongs_to = models.CharField(max_length=200)
+    category = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='subcategories', verbose_name='Subcategory of')
+    belongs_to = models.CharField(max_length=200, choices=BELONGS_TO_CHOICES, default=BELONGS_TO_CHOICES,
+                                  db_default='foods')
 
     def __str__(self):
         return self.name_en
