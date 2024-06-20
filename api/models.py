@@ -55,8 +55,6 @@ class Category(models.Model):
 
 class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='categories')
-    subcategory = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True,
-                                    related_name='sub_categories')
     name_uz = models.CharField(max_length=200, unique=True)
     name_ru = models.CharField(max_length=200, unique=True)
     name_en = models.CharField(max_length=200, unique=True)
@@ -64,7 +62,7 @@ class Product(models.Model):
     desc_ru = models.CharField(max_length=200, blank=True, null=True)
     desc_en = models.CharField(max_length=200, blank=True, null=True)
     price = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
-    photo = models.CharField(max_length=200, blank=True, null=True)
+    photo = models.CharField(max_length=200)
 
     def __str__(self):
         return self.name_en

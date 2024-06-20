@@ -19,6 +19,17 @@ class TelegramUserSerializer(ModelSerializer):
         model = models.TelegramUser
         fields = '__all__'
 
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        statuses = {
+            'bronze': '🥉 Bronze',
+            'silver': '🥈 Silver',
+            'gold': '🥇 Gold',
+            'platinum': '🌟 Platinum',
+        }
+        representation['status'] = statuses[instance.status]
+        return representation
+
 
 class CategorySerializer(ModelSerializer):
     class Meta:
