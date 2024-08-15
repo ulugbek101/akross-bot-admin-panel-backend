@@ -19,8 +19,10 @@ class TelegramUser(models.Model):
     phone_number = models.CharField(max_length=13, blank=True, null=True)
     telegram_id = models.CharField(max_length=200, unique=True)
     username = models.CharField(max_length=200, blank=True, null=True)
-    language_code = models.CharField(max_length=2, choices=LANGUAGE_CODE_CHOICES, default='uz', db_default='uz')
-    status = models.CharField(max_length=200, choices=STATUS_CHOICES, default='bronze', db_default='bronze')
+    language_code = models.CharField(
+        max_length=2, choices=LANGUAGE_CODE_CHOICES, default='uz', db_default='uz')
+    status = models.CharField(
+        max_length=200, choices=STATUS_CHOICES, default='bronze', db_default='bronze')
     order_count = models.IntegerField(default=0)
     last_visited_place = models.CharField(max_length=20, blank=True, null=True)
 
@@ -42,7 +44,8 @@ class Category(models.Model):
     name_en = models.CharField(max_length=200, unique=True)
     photo = models.CharField(max_length=200)
     has_subcategory = models.BooleanField(default=False)
-    category = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='subcategories', verbose_name='Subcategory of')
+    category = models.ForeignKey('self', on_delete=models.SET_NULL, null=True,
+                                 blank=True, related_name='subcategories', verbose_name='Subcategory of')
     belongs_to = models.CharField(max_length=200, choices=BELONGS_TO_CHOICES, default=BELONGS_TO_CHOICES,
                                   db_default='foods')
 
@@ -54,7 +57,8 @@ class Category(models.Model):
 
 
 class Product(models.Model):
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='categories')
+    category = models.ForeignKey(
+        Category, on_delete=models.CASCADE, related_name='categories')
     name_uz = models.CharField(max_length=200, unique=True)
     name_ru = models.CharField(max_length=200, unique=True)
     name_en = models.CharField(max_length=200, unique=True)
@@ -72,7 +76,8 @@ class Product(models.Model):
 
 
 class Location(models.Model):
-    user = models.ForeignKey(TelegramUser, on_delete=models.CASCADE, related_name='locations')
+    user = models.ForeignKey(
+        TelegramUser, on_delete=models.CASCADE, related_name='locations')
     coordinates = models.CharField(max_length=200)
     full_address = models.CharField(max_length=100)
 
@@ -85,10 +90,12 @@ class Location(models.Model):
 
 
 class Cart(models.Model):
-    user = models.ForeignKey(TelegramUser, on_delete=models.CASCADE, related_name='cart_items')
+    user = models.ForeignKey(
+        TelegramUser, on_delete=models.CASCADE, related_name='cart_items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField()
-    total_price = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    total_price = models.DecimalField(
+        max_digits=12, decimal_places=2, default=0.00)
 
     class Meta:
         unique_together = ('user', 'product')
@@ -97,7 +104,8 @@ class Cart(models.Model):
 
 class Order(models.Model):
     order_id = models.IntegerField()
-    user = models.ForeignKey(TelegramUser, on_delete=models.CASCADE, related_name='orders')
+    user = models.ForeignKey(
+        TelegramUser, on_delete=models.CASCADE, related_name='orders')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField()
     total_price = models.DecimalField(max_digits=12, decimal_places=5)
@@ -112,13 +120,33 @@ class Order(models.Model):
 
 
 class UserOrder(models.Model):
-    user = models.ForeignKey(TelegramUser, on_delete=models.CASCADE, related_name='user_orders')
-    deliver_type = models.CharField(max_length=50)
+    DELIVER_TYPE_CHOICES = (
+        ('deliver', 'Delivery'),
+        ('take away', 'Take away'),
+    )
+
+    STATUS_CHOICES = (
+        ('not_accepted', '⛔️ Not accepted'),
+        ('accepted', '📝 Accepted'),
+        ('pending', '🚚 On the way'),
+        ('completed', '✅ Completed'),
+    )
+    
+    PAYMENT_METHOD_CHOICES = (
+        ('cash', '💸 Cash'),
+		('card', '💳 Card'),
+    )
+
+    user = models.ForeignKey(
+        TelegramUser, on_delete=models.CASCADE, related_name='user_orders')
+    deliver_type = models.CharField(
+        max_length=50, choices=DELIVER_TYPE_CHOICES)
     deliver_time = models.CharField(max_length=5, blank=True, null=True)
-    status = models.CharField(max_length=50, default="not_accepted")
+    status = models.CharField(
+        max_length=50, choices=STATUS_CHOICES, default="not_accepted")
     created_date = models.DateField()
     created_time = models.TimeField()
-    payment_method = models.CharField(max_length=20)
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES)
 
     def __str__(self):
         return f"User Order {self.id} by {self.user}"

@@ -10,9 +10,9 @@ router.register(basename='telegram-users', viewset=views.TelegramUserViewSet, pr
 router.register(basename='categories', viewset=views.CategoryViewSet, prefix='categories')
 router.register(basename='products', viewset=views.ProductViewSet, prefix='products')
 router.register(basename='locations', viewset=views.LocationViewSet, prefix='locations')
-router.register(basename='cart', viewset=views.CategoryViewSet, prefix='cart')
+router.register(basename='carts', viewset=views.CartViewSet, prefix='carts')
 router.register(basename='orders', viewset=views.OrderViewSet, prefix='orders')
-router.register(basename='user-orders', viewset=views.LocationViewSet, prefix='user-orders')
+router.register(basename='user-orders', viewset=views.UserOrderViewSet, prefix='user-orders')
 
 urlpatterns = [
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

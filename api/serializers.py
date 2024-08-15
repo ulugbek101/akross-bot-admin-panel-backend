@@ -1,5 +1,5 @@
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, PrimaryKeyRelatedField
 
 from . import models
 
@@ -56,12 +56,29 @@ class CartSerializer(ModelSerializer):
 
 
 class OrderSerializer(ModelSerializer):
+    product = ProductSerializer(read_only=True)
+    product_id = PrimaryKeyRelatedField(queryset=models.Product.objects.all(), source='product', write_only=True)
+
     class Meta:
         model = models.Order
         fields = '__all__'
 
 
 class UserOrderSerializer(ModelSerializer):
+    orders = OrderSerializer(many=True, read_only=True)
+    user = TelegramUserSerializer(read_only=True)
+    user_id = PrimaryKeyRelatedField(queryset=models.TelegramUser.objects.all(), source='user', write_only=True)
+
     class Meta:
         model = models.UserOrder
         fields = '__all__'
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        
+        # Fetch related orders for the specific instance
+        orders = models.Order.objects.filter(order_id=instance.id)
+        orders = OrderSerializer(orders, many=True).data
+
+        representation['orders'] = orders
+        return representation
